@@ -19,18 +19,35 @@ import java.util.Properties;
 public class YelpService {
 
     @Autowired
-    @Qualifier("appPropertiesConfig")
+    @Qualifier("appEnvironmentConfig")
     private Properties appPropertiesConfig;
 
     @GetMapping("/{distance}/{term}/{location}")
     public ResponseEntity<String> getRestaurants(@PathVariable String distance, @PathVariable String term, @PathVariable String location) {
 
-        String apiKey = (String) appPropertiesConfig.get("API_KEY");
+        String apiKey = (String) appPropertiesConfig.get("YELP_API_KEY");
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + apiKey);
         headers.add("accept", "application/json");
         String url = "https://api.yelp.com/v3/businesses/search?sort_by=distance&limit=" + distance + "&term=" + term + "&location=" + location;
+        HttpEntity<Object> entity = new HttpEntity<Object>(headers);
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+
+        System.out.println(response);
+        return response;
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<String> getRestaurantDetails(@PathVariable String id) {
+
+        String apiKey = (String) appPropertiesConfig.get("YELP_API_KEY");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + apiKey);
+        headers.add("accept", "application/json");
+        String url = "https://api.yelp.com/v3/businesses/" + id;
         HttpEntity<Object> entity = new HttpEntity<Object>(headers);
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);

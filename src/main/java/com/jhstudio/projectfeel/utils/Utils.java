@@ -17,14 +17,16 @@ public class Utils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class.getName());
 
-    @Bean(name="appPropertiesConfig")
+    @Bean(name="appEnvironmentConfig")
     public static Properties fetchProperties(){
         Properties properties = new Properties();
         try {
             File file = ResourceUtils.getFile("classpath:.env");
             InputStream in = new FileInputStream(file);
             properties.load(in);
-            System.out.println(properties.get("API_KEY"));
+            if (!properties.get("YELP_API_KEY").equals("")){
+                System.out.println("Yelp API Key LOADED");
+            }
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
         }
