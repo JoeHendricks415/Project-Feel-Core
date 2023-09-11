@@ -22,15 +22,32 @@ public class YelpService {
     @Qualifier("appEnvironmentConfig")
     private Properties appPropertiesConfig;
 
-    @GetMapping("/{distance}/{term}/{location}")
-    public ResponseEntity<String> getRestaurants(@PathVariable String distance, @PathVariable String term, @PathVariable String location) {
+    @GetMapping("/{distance}/{term}/{zipCode}")
+    public ResponseEntity<String> getRestaurants(@PathVariable String distance, @PathVariable String term, @PathVariable String zipCode) {
 
         String apiKey = (String) appPropertiesConfig.get("YELP_API_KEY");
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + apiKey);
         headers.add("accept", "application/json");
-        String url = "https://api.yelp.com/v3/businesses/search?sort_by=distance&limit=" + distance + "&term=" + term + "&location=" + location;
+        String url = "https://api.yelp.com/v3/businesses/search?sort_by=distance&limit=" + distance + "&term=" + term + "&location=" + zipCode;
+        HttpEntity<Object> entity = new HttpEntity<Object>(headers);
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+
+        System.out.println(response);
+        return response;
+    }
+
+    @GetMapping("/{distance}/{term}/{latitude}/{longitude}")
+    public ResponseEntity<String> getRestaurantsByGeolocation(@PathVariable String distance, @PathVariable String term, @PathVariable String latitude, @PathVariable String longitude) {
+
+        String apiKey = (String) appPropertiesConfig.get("YELP_API_KEY");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + apiKey);
+        headers.add("accept", "application/json");
+        String url = "https://api.yelp.com/v3/businesses/search?sort_by=distance&limit=" + distance + "&term=" + term + "&latitude=" + latitude + "&longitude=" + longitude;
         HttpEntity<Object> entity = new HttpEntity<Object>(headers);
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
